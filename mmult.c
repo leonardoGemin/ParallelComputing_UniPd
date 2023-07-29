@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <mpi.h>
 
 
@@ -8,9 +10,14 @@
 /*typedef int M_TYPE;
 #define M_MPI_TYPE MPI_INT
 #define PLACEHOLDER "d"*/
-typedef unsigned long long M_TYPE;
+
+typedef unsigned int M_TYPE;
+#define M_MPI_TYPE MPI_UNSIGNED
+#define PLACEHOLDER "u"
+
+/*typedef unsigned long long M_TYPE;
 #define M_MPI_TYPE MPI_UNSIGNED_LONG_LONG
-#define PLACEHOLDER "llu"
+#define PLACEHOLDER "llu"*/
 
 
 
@@ -20,6 +27,13 @@ void fill_matrix(M_TYPE m[][SIZE]) {
 	for (i = 0; i < SIZE; i++)
 		for (j = 0; j < SIZE; j++)
 			m[i][j] = n++;
+}
+
+void fill_random_matrix(M_TYPE m[][SIZE]) {
+	size_t i, j;
+	for (i = 0; i < SIZE; i++)
+		for (j = 0; j < SIZE; j++)
+			m[i][j] = (M_TYPE)(rand() % 100);
 }
 
 void print_matrix(M_TYPE m[][SIZE]) {
@@ -41,6 +55,11 @@ int main(int argc, char **argv) {
 	double start, end;
 	
 	M_TYPE a[SIZE][SIZE], b[SIZE][SIZE], c[SIZE][SIZE];
+
+
+
+	// Random initialization
+	srand((unsigned int)time(NULL));
 	
 
 
@@ -58,8 +77,8 @@ int main(int argc, char **argv) {
 	// Process 0 fills the input matrices and broadcasts them to the rest
 	// (actually, only the relevant stripe of A is sent to each process)
 	if (procid == 0) {
-		fill_matrix(a);
-		fill_matrix(b);
+		fill_random_matrix(a);
+		fill_random_matrix(b);
 	}
 
 
