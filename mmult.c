@@ -2,7 +2,7 @@
 #include <mpi.h>
 
 
-#define SIZE 9
+#define SIZE 10
 
 
 /*typedef int M_TYPE;
@@ -27,7 +27,7 @@ void print_matrix(M_TYPE m[][SIZE]) {
 	for (i = 0; i < SIZE; i++) {
 		printf("\n\t| ");
 		for (j = 0; j < SIZE; j++)
-			printf("%5" PLACEHOLDER " ", m[i][j]);
+			printf("%6" PLACEHOLDER " ", m[i][j]);
 		printf("|");
 	}
 }
@@ -77,26 +77,26 @@ int main(int argc, char **argv) {
 	
 
 
-	M_TYPE recvbuf[(procid < (SIZE % numprocs)) ? ((SIZE / numprocs) + 1) : (SIZE / numprocs)][SIZE];
-	int recvcount = sizeof(recvbuf) / sizeof(M_TYPE);
+	int counts[numprocs], displacements[numprocs];
+	int displacement = 0;
+
+	for (i = 0; i < numprocs; i++) {
+		counts[i] = (i < (SIZE % numprocs)) ? (((SIZE / numprocs) + 1) * SIZE) : ((SIZE / numprocs) * SIZE);
+		displacements[i] = displacement;
+		displacement += counts[i];
+	}
 	
 
 
-	int sendcounts[numprocs], senddispls[numprocs];
-	int senddispl = 0;
-
-	for (i = 0; i < numprocs; i++) {
-		sendcounts[i] = (i < (SIZE % numprocs)) ? (((SIZE / numprocs) + 1) * SIZE) : ((SIZE / numprocs) * SIZE);
-		senddispls[i] = senddispl;
-		senddispl += sendcounts[i];
-	}
+	M_TYPE recvbuf[(procid < (SIZE % numprocs)) ? ((SIZE / numprocs) + 1) : (SIZE / numprocs)][SIZE];
+	int recvcount = sizeof(recvbuf) / sizeof(M_TYPE);
 
 
 
 	// Distribuisce i dati da un membro a tutti i membri di un gruppo.
 	MPI_Scatterv(	a,						// Puntatore al buffer che contiene i dati da inviare dal processo radice
-					sendcounts,				// Numero di elementi nel buffer di invio
-					senddispls,				// Posizioni dei dati da inviare a ogni processo di comunicatore
+					counts,					// Numero di elementi nel buffer di invio
+					displacements,			// Posizioni dei dati da inviare a ogni processo di comunicatore
 					M_MPI_TYPE,				
 					recvbuf,				// Puntatore al buffer contenente i dati ricevuti in ogni processo
 					recvcount,				// Numero di elementi nel buffer di ricezione
@@ -120,25 +120,14 @@ int main(int argc, char **argv) {
 		}
 	
 
-	
-	int recvcounts[numprocs], recvdispls[numprocs];
-	int recvdispl = 0;
-
-	for (i = 0; i < numprocs; i++) {
-		recvcounts[i] = (i < (SIZE % numprocs)) ? (((SIZE / numprocs) + 1) * SIZE) : ((SIZE / numprocs) * SIZE);
-		recvdispls[i] = recvdispl;
-		recvdispl += recvcounts[i];
-	}
-	
-
 
 	// Raccoglie i dati da tutti i membri di un gruppo a un membro.
 	MPI_Gatherv(	sendbuf,				// Puntatore a un buffer che contiene i dati da inviare al processo radice
 					sendcount,				// Numero di elementi nel buffer di invio
 					M_MPI_TYPE,				
 					c,						// Puntatore a un buffer nel processo radice contenente i dati ricevuti da ogni processo
-					recvcounts,				// Numero di elementi ricevuti da ogni processo
-					recvdispls,				//
+					counts,					// Numero di elementi ricevuti da ogni processo
+					displacements,			//
 					M_MPI_TYPE,
 					0, MPI_COMM_WORLD);
 	
