@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
 	
 	SIZE = (size_t)atoi(argv[1]);
 	M_TYPE a[SIZE][SIZE], b[SIZE][SIZE], c[SIZE][SIZE];
+	M_TYPE bt[SIZE][SIZE];  // Here I save the transpose matrix of B
 
 
 
@@ -73,6 +74,11 @@ int main(int argc, char **argv) {
 	if (procid == 0) {
 		fill_random_matrix(a);
 		fill_random_matrix(b);
+
+		// Compute the transposed matrix of B
+		for (i = 0; i < SIZE; i++)
+			for (j = 0; j < SIZE; j++)
+				bt[j][i] = b[i][j];
 	}
 
 
@@ -83,7 +89,7 @@ int main(int argc, char **argv) {
 
 
 	// Broadcasts data from one member of a group to all members of the group.
-	MPI_Bcast(		b,						// Pointer to the data buffer
+	MPI_Bcast(		bt,						// Pointer to the data buffer
 					SIZE * SIZE,			// Number of data elements in the buffer
 					M_MPI_TYPE,				// MPI data type of the elements in the send buffer
 					0, MPI_COMM_WORLD);
@@ -137,7 +143,7 @@ int main(int argc, char **argv) {
 		for (j = 0; j < SIZE; j++) {
         	sendbuf[i][j] = 0;
 			for (k = 0; k < SIZE; k++)
-				sendbuf[i][j] += recvbuf[i][k] * b[k][j];
+				sendbuf[i][j] += recvbuf[i][k] * bt[j][k];
 		}
 	
 
