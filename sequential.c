@@ -10,19 +10,19 @@ typedef unsigned int M_TYPE;
 size_t SIZE;
 
 
-void fill_random_matrix(M_TYPE m[][SIZE]) {
+void fill_random_matrix(M_TYPE m[]) {
 	size_t i, j;
 	for (i = 0; i < SIZE; i++)
 		for (j = 0; j < SIZE; j++)
-			m[i][j] = (M_TYPE)(rand() % 100);
+			m[(i * SIZE) + j] = (M_TYPE)(rand() % 100);
 }
 
-void print_matrix(M_TYPE m[][SIZE]) {
+void print_matrix(M_TYPE m[]) {
 	size_t i, j;
 	for (i = 0; i < SIZE; i++) {
 		printf("\n\t| ");
 		for (j = 0; j < SIZE; j++)
-			printf(PLACEHOLDER " ", m[i][j]);
+			printf(PLACEHOLDER " ", m[(i * SIZE) + j]);
 		printf("|");
 	}
 }
@@ -40,7 +40,9 @@ int main(int argc, char **argv) {
 
 	int i, j, k;
 
-	M_TYPE a[SIZE][SIZE], b[SIZE][SIZE], c[SIZE][SIZE];
+	M_TYPE *a = malloc(SIZE * SIZE * sizeof(M_TYPE)),
+	       *b = malloc(SIZE * SIZE * sizeof(M_TYPE)),
+		   *c = malloc(SIZE * SIZE * sizeof(M_TYPE));
 
 	// Random initialization
 	srand((unsigned int)time(NULL));
@@ -54,9 +56,8 @@ int main(int argc, char **argv) {
 	// standard N^3 algorithm
 	for (i = 0; i < SIZE; i++) {
 		for (j = 0; j < SIZE; j++) {
-			c[i][j] = 0;
 			for (k = 0; k < SIZE; k++){
-				c[i][j] += a[i][k] * b[k][j];
+				c[(i * SIZE) + j] += a[(i * SIZE) + k] * b[(k * SIZE) + j];
 			}
 		}
 	}

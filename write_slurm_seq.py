@@ -1,4 +1,4 @@
-sizes = ['256', '384', '512', '768']
+sizes = ['256', '512', '1024', '2048']
 
 for size in sizes:
     with open(f'slurm_script/{size}_seq.slurm', 'w') as f:
