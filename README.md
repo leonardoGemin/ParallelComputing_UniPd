@@ -7,7 +7,7 @@ Install MPI: `sudo apt install libcr-dev mpich mpich-doc`
 
 
 ## Sequential version
-Given two square matrices A and B of same size, C is compute as follows:
+Given two square matrices `A` and `B` of same size, `C` is compute as follows:
 
 ```
 for (i = 0; i < SIZE; i++)
@@ -58,7 +58,7 @@ and submit the job through `sbatch test.slurm`.
 
 
 ## Project report
-Click [here](https://github.com/leonardoGemin) to see the report of the project.
+Click [here](/report/main.pdf) to see the report of the project.
 
 
 ## Authors
