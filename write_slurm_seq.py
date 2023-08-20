@@ -1,7 +1,17 @@
+import os
+
+
+
+path = 'slurm_script'
+if not os.path.exists(path):
+    os.makedirs(path)
+
+
+
 sizes = ['256', '512', '1024', '2048']
 
 for size in sizes:
-    with open(f'slurm_script/{size}_seq.slurm', 'w') as f:
+    with open(f'{path}/{size}_seq.slurm', 'w') as f:
         f.write(f'#!/bin/bash\n')
         f.write(f'\n')
         f.write(f'#SBATCH --job-name mmult\n')

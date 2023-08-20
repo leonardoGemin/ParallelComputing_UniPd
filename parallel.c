@@ -312,7 +312,7 @@ int main(int argc, char **argv) {
 	//  Check that the arguments are at least 3: the executable file and the size of the matrix.
 	//  If an additional character is entered, the print function is enabled.
 	if (argc < 3) {
-		printf("\n USAGE:\n\t %s  SIZE  <0 | 1>  [any character for enable verbose mode]\n", argv[0]);
+		printf("\n USAGE:\n\t %s  SIZE  <0 | 1 | 2>  [any character for enable verbose mode]\n", argv[0]);
 		printf("\t 0 --> Use monodimensional arrays instead of matrices.\n");
 		printf("\t 1 --> (0) + transpose the matrix B to access both A and B row-wise (less cache misses).\n");
 		printf("\t 2 --> (0) + change the order of the three loops from i-j-k to k-i-j.\n");
@@ -372,7 +372,7 @@ int main(int argc, char **argv) {
 			break;
 
 		default:
-			printf("\n USAGE:\n\t %s  SIZE  <0 | 1>  [any character for enable verbose mode]\n", argv[0]);
+			printf("\n USAGE:\n\t %s  SIZE  <0 | 1 | 2>  [any character for enable verbose mode]\n", argv[0]);
 			printf("\t 0 --> Use monodimensional arrays instead of matrices.\n");
 			printf("\t 1 --> (0) + transpose the matrix B to access both A and B row-wise (less cache misses).\n");
 			printf("\t 2 --> (0) + change the order of the three loops from i-j-k to k-i-j.\n");

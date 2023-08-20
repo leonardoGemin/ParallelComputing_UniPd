@@ -1,30 +1,49 @@
+import os
+
+
+
+path = 'slurm_script'
+if not os.path.exists(path):
+    os.makedirs(path)
+
+
+
+types = ['mono', 'monotransp', 'monokij']
 sizes = ['256', '512', '1024', '2048']
 procs = ['1', '2', '4', '8', '16']
+userMail = "leonardo.gemin@gmail.com"
 
-for proc in procs:
+
+
+i = 0
+
+# i = {0, 1, 2}
+#      |  |  +->  mono + k-i-j  -->  (0) + change the order of the three loops from i-j-k to k-i-j.
+#      |  +---->  monotransp    -->  (0) + transpose the matrix B to access both A and B row-wise (less cache misses).
+#      +------->  mono          -->  Use monodimensional arrays instead of matrices.
+
+
+
+for type in types:
     for size in sizes:
-        with open(f'slurm_script/{size}_{proc}.slurm', 'w') as f:
-            f.write(f'#!/bin/bash\n')
-            f.write(f'\n')
-            f.write(f'#SBATCH --job-name mmult\n')
-            f.write(f'#SBATCH --output {size}/plain_{proc}_%j.out\n')
-            f.write(f'#SBATCH --error {size}/plain_{proc}_%j.err\n')
-            f.write(f'#SBATCH --mail-user leonardo.gemin@gmail.com\n')
-            f.write(f'#SBATCH --mail-type ALL\n')
-            f.write(f'#SBATCH --time 10:00\n')
-            f.write(f'#SBATCH --ntasks {proc}\n')
-            f.write(f'#SBATCH --partition allgroups\n')
-            f.write(f'#SBATCH --mem 200M\n')
-            f.write(f'\n')
-            f.write(f'\n')
-            f.write(f'mpicc -o mmult -O3 mmult.c\n')
-            f.write(f'\n')
-            f.write(f'for ((i = 0; i < 10; i++)) do\n')
-            f.write(f'    mpirun -np {proc} ./mmult {size}\n')
-            f.write(f'done\n')
-
-
-for size in sizes:
-    with open(f'slurm_script/{size}.sh', 'w') as f:
         for proc in procs:
-            f.write(f'sbatch {size}_{proc}.slurm\n')
+            with open(f'{path}/{size}_{type}_{proc}.slurm', 'w') as f:
+                f.write(f'#!/bin/bash\n')
+                f.write(f'\n')
+                f.write(f'#SBATCH --job-name mmult\n')
+                f.write(f'#SBATCH --output {size}_{type}_{proc}.out\n')
+                f.write(f'#SBATCH --error {size}_{type}_{proc}.err\n')
+                f.write(f'#SBATCH --mail-user {userMail}\n')
+                f.write(f'#SBATCH --mail-type ALL\n')
+                f.write(f'#SBATCH --time 10:00\n')
+                f.write(f'#SBATCH --ntasks {proc}\n')
+                f.write(f'#SBATCH --partition allgroups\n')
+                f.write(f'#SBATCH --mem 200M\n')
+                f.write(f'\n')
+                f.write(f'\n')
+                f.write(f'mpicc -o parallel -O3 parallel.c\n')
+                f.write(f'\n')
+                f.write(f'for ((i = 0; i < 10; i++)) do\n')
+                f.write(f'    mpirun -np {proc} ./parallel {size} {i}\n')
+                f.write(f'done\n')
+    i += 1
