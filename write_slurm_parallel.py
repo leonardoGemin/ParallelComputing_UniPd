@@ -11,7 +11,7 @@ if not os.path.exists(path):
 types = ['mono', 'monotransp', 'monokij']
 sizes = ['256', '512', '1024', '2048']
 procs = ['1', '2', '4', '8', '16']
-userMail = "leonardo.gemin@gmail.com"
+userMail = "leonardo.gemin@studenti.unipd.it"
 
 
 
